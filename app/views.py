@@ -1,6 +1,8 @@
 from app import app, db
+from apns import APNs, Payload
 from flask import render_template, flash, redirect, request
 
+import os
 @app.route('/')
 @app.route('/index')
 def index():
@@ -19,4 +21,4 @@ def send():
     apns.gateway_server.send_notification(token_hex, payload)
     #for (token_hex, fail_time) in apns.feedback_server.items():
     #    return "send successful" + str(fail_time)
-    return render_template
+    return "successful"
