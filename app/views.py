@@ -1,4 +1,4 @@
-from app import app, db
+from app import app, db, models
 from apns import APNs, Payload
 from flask import render_template, flash, redirect, request
 
@@ -22,3 +22,38 @@ def send():
     #for (token_hex, fail_time) in apns.feedback_server.items():
     #    return "send successful" + str(fail_time)
     return "successful"
+
+def store_user(jsondata):
+    try:
+        udid=jsondata['udid']
+        language=jsondata['language']
+        push=jsondata['push']
+        last=jsondata['last']
+        token=None
+        if jsondata.has_key('token'):
+            if(jsondata['token'] is not None):
+                token=jsondata['token']
+        checkuser = models.User.query.filter_by(udid=udid).first()
+        if checkuser is not None:
+            print '>The user exists, update the data'
+            checkuser.udid=udid
+            checkuser.language=language
+            checkuser.push=push
+            checkuser.last=datetime.date.today()
+            checkuser.token=token
+            db.session.commit()
+        else:
+            print '>The user doesnt exists, create one'
+            newuser = models.User(udid=udid,language=language,push=push,last=last,token=token)
+            db.session.add(newuser)
+            db.session.commit()
+    except:
+        print "store data error"
+
+@app.route('/receive/user',methods=['POST'])
+def receive_user():
+    if request.headers['Content-Type'] == 'application/json':
+        store_user(request.json)
+        return "updata successful"
+    else:
+        return "wrong request data"
