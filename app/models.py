@@ -1,25 +1,25 @@
 from app import db
+import datetime
 
-ROLE_USER = 0
-ROLE_ADMIN = 1
+
 
 class User(db.Model):
-    id = db.Column(db.Integer, primary_key = True)
-    nickname = db.Column(db.String(64), index = True, unique = True)
-    email = db.Column(db.String(120), index = True, unique = True)
-    role = db.Column(db.SmallInteger, default = ROLE_USER)
-
+    __tablename__='user'
+    userid=db.Column(db.Integer,primary_key=True)
+    udid=db.Column(db.String(70),unique=True)
+    language=db.Column(db.String(70),unique=True)
+    push=db.Column(db.Boolean, default=0)
+    last=db.Column(db.DateTime, default=datetime.date.today())
+    token=db.Column(db.String(100))
+    def __init__(self, udid=None,language=None,push=None,last=None,token=None):
+        self.udid=udid
+        self.language=language
+        self.push=push
+        self.token=token
+        self.last=datetime.date.today()
     def __repr__(self):
-        return '<User %r>' % (self.nickname)
+        return '<User %s>' % self.username
 
-class Post(db.Model):
-    id = db.Column(db.Integer, primary_key = True)
-    body = db.Column(db.String(140))
-    timestamp = db.Column(db.DateTime)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-
-    def __repr__(self):
-        return '<Post %r>' % (self.body)
 
 
 
